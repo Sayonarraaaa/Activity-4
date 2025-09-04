@@ -180,24 +180,59 @@ gender.addEventListener("keydown", e => {
 });
 
 form.addEventListener("keydown", e => {
-  const focusable = Array.from(form.querySelectorAll("input, select, button"))
-    .filter(el => el.style.display !== "none");
-
-  let index = focusable.indexOf(document.activeElement);
-  if (index === -1) return;
-
-  if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+  if (e.key === "Enter") {
     e.preventDefault();
+
+    const focusable = Array.from(form.querySelectorAll("input, select, button"))
+      .filter(el => el.style.display !== "none");
+
+    let index = focusable.indexOf(document.activeElement);
+
+    // Current field
+    let current = document.activeElement;
+
+    // Validation before moving
+    if (current === fname && !fname.value.trim()) {
+      form.classList.add("form-error", "shake");
+      setTimeout(() => form.classList.remove("form-error", "shake"), 400);
+      return;
+    }
+
+    if (current === age && !age.value.trim()) {
+      form.classList.add("form-error", "shake");
+      setTimeout(() => form.classList.remove("form-error", "shake"), 400);
+      return;
+    }
+
+    if (current === gender) {
+      if (!gender.value) {
+        form.classList.add("form-error", "shake");
+        setTimeout(() => form.classList.remove("form-error", "shake"), 400);
+        return;
+      }
+      if (gender.value === "Other" && otherGender.value.trim() === "") {
+        form.classList.add("form-error", "shake");
+        setTimeout(() => form.classList.remove("form-error", "shake"), 400);
+        return;
+      }
+    }
+
+    if (current === otherGender) {
+      if (!otherGender.value.trim()) {
+        form.classList.add("form-error", "shake");
+        setTimeout(() => form.classList.remove("form-error", "shake"), 400);
+        return;
+      } else {
+        form.requestSubmit();
+        return;
+      }
+    }
+
     let next = (index + 1) % focusable.length;
     focusable[next].focus();
   }
-
-  if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-    e.preventDefault();
-    let prev = (index - 1 + focusable.length) % focusable.length;
-    focusable[prev].focus();
-  }
 });
+
 
 document.addEventListener("keydown", e => {
   if (e.altKey && e.key === "1") {
